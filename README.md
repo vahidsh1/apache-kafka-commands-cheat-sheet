@@ -1,33 +1,35 @@
 ## Kafka Topics
+### Create a topic
+ `bin/kafka-topics.sh --create --zookeeper localhost:2181 --topic test-topic --partitions 2 --replication-factor 2`
 ### List existing topics
  `bin/kafka-topics.sh --zookeeper localhost:2181 --list`
 
 ### Describe a topic
-  `bin/kafka-topics.sh --zookeeper localhost:2181 --describe --topic mytopic `
+  `bin/kafka-topics.sh --zookeeper localhost:2181 --describe --topic test-topic `
 ### Purge a topic
- `bin/kafka-topics.sh --zookeeper localhost:2181 --alter --topic mytopic --config retention.ms=1000`
+ `bin/kafka-topics.sh --zookeeper localhost:2181 --alter --topic test-topic --config retention.ms=1000`
  
 ... wait a minute ...
 
- `bin/kafka-topics.sh --zookeeper localhost:2181 --alter --topic mytopic --delete-config retention.ms`
+ `bin/kafka-topics.sh --zookeeper localhost:2181 --alter --topic test-topic --delete-config retention.ms`
  
 ### Delete a topic
- `bin/kafka-topics.sh --zookeeper localhost:2181 --delete --topic mytopic`
+ `bin/kafka-topics.sh --zookeeper localhost:2181 --delete --topic test-topic`
  
 ### Get number of messages in a topic ???
- `bin/kafka-run-class.sh kafka.tools.GetOffsetShell --broker-list localhost:9092 --topic mytopic --time -1 --offsets 1 | awk -F  ":" '{sum += $3} END {print sum}'`
+ `bin/kafka-run-class.sh kafka.tools.GetOffsetShell --broker-list localhost:9092 --topic test-topic --time -1 --offsets 1 | awk -F  ":" '{sum += $3} END {print sum}'`
  
 ### Get the earliest offset still in a topic
-`bin/kafka-run-class.sh kafka.tools.GetOffsetShell --broker-list localhost:9092 --topic mytopic --time -2`
+`bin/kafka-run-class.sh kafka.tools.GetOffsetShell --broker-list localhost:9092 --topic test-topic --time -2`
 
 ### Get the latest offset still in a topic
-`bin/kafka-run-class.sh kafka.tools.GetOffsetShell --broker-list localhost:9092 --topic mytopic --time -1`
+`bin/kafka-run-class.sh kafka.tools.GetOffsetShell --broker-list localhost:9092 --topic test-topic --time -1`
 
 ### Consume messages with the console consumer
-`bin/kafka-console-consumer.sh --new-consumer --bootstrap-server localhost:9092 --topic mytopic --from-beginning`
+`bin/kafka-console-consumer.sh --new-consumer --bootstrap-server localhost:9092 --topic test-topic --from-beginning`
 
 ## Get the consumer offsets for a topic
-`bin/kafka-consumer-offset-checker.sh --zookeeper=localhost:2181 --topic=mytopic --group=my_consumer_group`
+`bin/kafka-consumer-offset-checker.sh --zookeeper=localhost:2181 --topic=test-topic --group=my_consumer_group`
 
 ### Read from __consumer_offsets
 
@@ -49,7 +51,7 @@ Add the following property to `config/consumer.properties`:
 ## kafkacat
 
 ### Getting the last five message of a topic
-`kafkacat -C -b localhost:9092 -t mytopic -p 0 -o -5 -e`
+`kafkacat -C -b localhost:9092 -t test-topic -p 0 -o -5 -e`
 
 ## Zookeeper
 
