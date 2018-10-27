@@ -15,6 +15,9 @@
  
 ### Delete a topic
  `bin/kafka-topics.sh --zookeeper localhost:2181 --delete --topic test-topic`
+
+### Update the topic config
+ `bin/kafka-configs.sh --zookeeper localhost:2181 --alter --entity-name test-topic --add-config 'retention.ms=1000' --entity-type topics`
  
 ### Get number of messages in a topic ???
  `bin/kafka-run-class.sh kafka.tools.GetOffsetShell --broker-list localhost:9092 --topic test-topic --time -1 --offsets 1 | awk -F  ":" '{sum += $3} END {print sum}'`
@@ -24,6 +27,9 @@
 
 ### Get the latest offset still in a topic
 `bin/kafka-run-class.sh kafka.tools.GetOffsetShell --broker-list localhost:9092 --topic test-topic --time -1`
+
+### Produce messages with the console producer
+`bin/kafka-console-producer.sh --broker-list localhost:9092 --topic test-topic`
 
 ### Consume messages with the console consumer
 `bin/kafka-console-consumer.sh --new-consumer --bootstrap-server localhost:9092 --topic test-topic --from-beginning`
