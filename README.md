@@ -1,6 +1,12 @@
 ## Kafka Topics
+
 ### Create a topic
  `bin/kafka-topics.sh --create --zookeeper localhost:2181 --topic test-topic --partitions 2 --replication-factor 2`
+
+### Increase the partition's count of topic
+ `bin/kafka-topics.sh --zookeeper localhost:2181 --alter --topic test-topic --partitions 101`
+
+
 ### List existing topics
  `bin/kafka-topics.sh --zookeeper localhost:2181 --list`
 
