@@ -57,6 +57,10 @@ Add the following property to `config/consumer.properties`:
 
 `bin/kafka-consumer-groups.sh --new-consumer --bootstrap-server localhost:9092 --list` (new api)
 
+### Describe the consumer group (TOPIC, PARTITION, CURRENT-OFFSET, LOG-END-OFFSET, LAG, CONSUMER-ID, HOST and CLIENT-ID)
+`./bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --group test_group`
+
+
 ### View the details of a consumer group 
 `bin/kafka-consumer-groups.sh --zookeeper localhost:2181 --describe --group <group name>`
 
