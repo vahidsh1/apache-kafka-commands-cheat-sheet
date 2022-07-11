@@ -1,30 +1,30 @@
 ## Kafka Topics
 
 ### Create a topic
- `bin/kafka-topics.sh --create --zookeeper <zookeeperhost:port> --topic <topic_name> --partitions 2 --replication-factor 2`
+ `bin/kafka-topics.sh --create --bootstrap-server <BrokerHost:port> --topic <topic_name> --partitions 2 --replication-factor 2`
 
 ### Increase the partition's count of topic
- `bin/kafka-topics.sh --zookeeper <zookeeperhost:port> --alter --topic <topic_name> --partitions 101`
+ `bin/kafka-topics.sh --bootstrap-server <BrokerHost:port> --alter --topic <topic_name> --partitions 101`
 
 
 ### List existing topics
- `bin/kafka-topics.sh --zookeeper <zookeeperhost:port> --list`
+ `bin/kafka-topics.sh --bootstrap-server <BrokerHost:port> --list`
 
 ### Describe a topic
-  `bin/kafka-topics.sh --zookeeper <zookeeperhost:port> --describe --topic <topic_name>`
+  `bin/kafka-topics.sh --bootstrap-server <BrokerHost:port> --describe --topic <topic_name>`
   
 ### Purge a topic
- `bin/kafka-topics.sh --zookeeper <zookeeperhost:port> --alter --topic <topic_name> --config retention.ms=1000`
+ `bin/kafka-topics.sh --bootstrap-server <BrokerHost:port> --alter --topic <topic_name> --config retention.ms=1000`
  
 ... wait for 5 minutes ...
 
- `bin/kafka-topics.sh --zookeeper <zookeeperhost:port> --alter --topic <topic_name> --delete-config retention.ms`
+ `bin/kafka-topics.sh --bootstrap-server <BrokerHost:port> --alter --topic <topic_name> --delete-config retention.ms`
  
 ### Delete a topic
- `bin/kafka-topics.sh --zookeeper <zookeeperhost:port> --delete --topic <topic_name>`
+ `bin/kafka-topics.sh --bootstrap-server <BrokerHost:port> --delete --topic <topic_name>`
 
 ### Update the topic config
- `bin/kafka-configs.sh --zookeeper <zookeeperhost:port> --alter --entity-name <topic_name> --add-config 'retention.ms=1000' --entity-type topics`
+ `bin/kafka-configs.sh --bootstrap-server <BrokerHost:port> --alter --entity-name <topic_name> --add-config 'retention.ms=1000' --entity-type topics`
  
 ### Get number of messages in a topic ???
  `bin/kafka-run-class.sh kafka.tools.GetOffsetShell --broker-list <kafkahost:port> --topic <topic_name> --time -1 --offsets 1 | awk -F  ":" '{sum += $3} END {print sum}'`
