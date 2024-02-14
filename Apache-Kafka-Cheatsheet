@@ -1,0 +1,226 @@
+Apache Kafka Cheatsheet
+Photo of Java Code Geeks Java Code GeeksOctober 27th, 2023Last Updated: December 12th, 20230 3,255 17 minutes read
+ADVERTISEMENT
+Introduction
+Apache Kafka is a robust, distributed streaming platform that has become an integral part of modern data processing and real-time event streaming architectures. It was originally developed by LinkedIn and open-sourced as an Apache Software Foundation project. Kafka provides a reliable, high-throughput, low-latency, and fault-tolerant way to publish, subscribe to, store, and process streams of data.
+
+At its core, Kafka is a distributed event streaming system that is designed to handle a vast amount of data in a highly scalable, durable, and fault-tolerant manner. It’s widely used for building real-time data pipelines, monitoring systems, log aggregation, and more. Kafka’s architecture is built around a publish-subscribe model, where data producers (publishers) send records to topics, and data consumers (subscribers) read from those topics.
+
+This cheatsheet serves as a quick reference guide to key concepts, components, and commands in Apache Kafka. Whether you’re a developer, data engineer, or operations professional, it will help you navigate the Kafka ecosystem, set up your Kafka clusters, and perform common tasks with ease. From understanding Kafka’s fundamental components to managing topics, producers, and consumers, you’ll find the essential information you need to work effectively with Kafka in a compact and accessible format.
+
+Let’s dive into the world of Apache Kafka and unlock the power of real-time data streaming for your projects and applications.
+
+Installing and Running Apache Kafka
+To install and start Apache Kafka on your local machine, follow these step-by-step instructions. We’ll cover a basic setup for development and testing purposes.
+
+Prerequisites
+Before you begin, ensure you have Java installed on your system, as Kafka is a Java-based application.
+Download Apache Kafka
+Visit the Apache Kafka website’s download page: Apache Kafka Downloads.
+Download the latest stable version of Kafka, typically a binary release package. Choose the binary release that matches your operating system (e.g., kafka_2.13-3.1.0.tgz for a Unix-like system).
+Extract the Kafka Archive
+Navigate to the directory where you downloaded Kafka.
+Use the following command to extract the Kafka archive (replace the filename with your downloaded version): tar -xzf kafka_2.13-3.1.0.tgz
+Start the Kafka Server (Broker)
+Change your working directory to the Kafka installation directory.
+Kafka depends on Apache ZooKeeper for distributed coordination. You need to start ZooKeeper before starting Kafka. You can use the ZooKeeper scripts provided with Kafka, run the following command: bin/zookeeper-server-start.sh config/zookeeper.properties (leave the ZooKeeper terminal running in the background)
+Open a new terminal window and start the Kafka server by running the following command: bin/kafka-server-start.sh config/server.properties (leave the Kafka server terminal running in the background)
+Create a Kafka Topic
+We will create a Kafka topic named “test-topic” to help us follow along the rest of this cheatsheet. In a new terminal, use the following command: bin/kafka-topics.sh --create --topic test-topic --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1
+That’s it! You now have Apache Kafka up and running on your local machine. You can start producing and consuming messages, create more topics, and explore the rich set of features Kafka has to offer for event streaming and data processing.
+
+Apache Kafka Components
+Apache Kafka consists of three major components, the role of each is summarized below:
+
+SYSTEM	DESCRIPTION
+Publish/Subscribe	The Publish/Subscribe messaging system enables distributed streaming of events. It is designed to handle a vast amount of data in a highly scalable, durable, and fault-tolerant manner.
+Kafka Connect	The Kafka Connect framework is used to connect external data sources (event producers) and data sinks (event consumers) to the platform.
+Kafka Streams	Client library that enables processing of events/data in real-time.
+Apache Kafka Components
+As stated above, Apache Kafka runs in distributed clusters. A cluster node is being referred to as a Broker. Kafka Connect integrates Brokers with external clients that produce events or consume event data. Producers and consumers utilize Kafka’s publish/subscribe messaging system to achieve instant exchange of event data between servers, processes, and applications. In case data handling is required, the Kafka Streams component can be used for real-time event processing.
+
+The Publish-Subscribe System
+The publish/subscribe system is responsible for the distributed streaming of a vast amount of data in a highly scalable, durable, and fault-tolerant manner. Below are its main key concepts:
+
+CONCEPT	DESCRIPTION
+Broker	A Kafka server instance that stores and manages data. Producers publish messages to brokers, and consumers retrieve messages from brokers. Kafka clusters consist of multiple brokers to ensure fault tolerance and scalability.
+Topic	A logical channel or category for data in Kafka. It is used to categorize messages, allowing producers to publish data to a specific topic and consumers to subscribe to the topics of their interest. Topics can have multiple partitions for parallelism.
+Partition	A way to horizontally distribute data within a topic. Each partition is an ordered, immutable sequence of messages. Partitions allow Kafka to achieve high throughput by distributing data across multiple brokers and enabling parallelism for consumers.
+Offset	A unique sequential number assigned to each message within a topic partition.
+Message (aka Record)	The means to transfer data between producers and consumers. It Contains a key, value, timestamp, and a header.
+Producer	A component that sends messages to Kafka topics. Producers can publish data to one or more topics, and they are responsible for specifying the topic and partition to which a message should be sent.
+Consumer	A component that subscribes to one or more topics and reads messages from Kafka. Kafka supports different types of consumers, such as the high-level consumer API and the low-level consumer API. Consumers can work individually or in consumer groups for load balancing.
+Consumer Group	A group of consumers that work together to consume data from a topic. Each partition within a topic is consumed by only one consumer within a group, ensuring parallel processing while maintaining order. Kafka automatically rebalances partitions among consumers in a group.
+Zookeeper	Used for distributed coordination and management of Kafka clusters. While newer Kafka versions are designed to work without Zookeeper, older versions relied on it for maintaining cluster metadata and leader election. It plays a crucial role in cluster management and maintenance.
+Producer API	A client library or interface for producing data to Kafka. Popular programming languages like Java, Python, and others have Kafka producer libraries that allow developers to create producers.
+Consumer API	A client library or interface for consuming data from Kafka. Like producer libraries, Kafka provides consumer libraries in various programming languages for reading data from Kafka topics.
+Publish-Subscribe Fundamentals
+Below is a Java code snippet that demonstrates how to create a Kafka producer and send a “Hello, World!” message to the “test-topic” topic created earlier.
+
+01
+02
+03
+04
+05
+06
+07
+08
+09
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+import org.apache.kafka.clients.producer.*;
+ 
+import java.util.Properties;
+ 
+public class KafkaProducerExample {
+    public static void main(String[] args) {
+        // Set up Kafka producer properties
+        Properties props = new Properties();
+        props.put("bootstrap.servers", "localhost:9092");
+        props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+ 
+        // Create a Kafka producer
+        Producer<String, String> producer = new KafkaProducer<>(props);
+ 
+        // Define the topic to send the message to
+        String topic = "test-topic";
+ 
+        // The key for the message
+        String key = "myKey";
+ 
+        // The message to send
+        String message = "Hello, World!";
+ 
+        // Create a ProducerRecord with the topic and message
+        ProducerRecord<String, String> record = new ProducerRecord<>(topic, key, message);
+ 
+        // Send the message to the Kafka topic
+        producer.send(record, new Callback() {
+            public void onCompletion(RecordMetadata metadata, Exception exception) {
+                if (exception == null) {
+                    System.out.println("Message sent successfully to topic " + metadata.topic());
+                    System.out.println("Partition: " + metadata.partition());
+                    System.out.println("Offset: " + metadata.offset());
+                } else {
+                    System.err.println("Error sending message: " + exception.getMessage());
+                }
+            }
+        });
+ 
+        // Close the producer when done
+        producer.close();
+    }
+}
+In this code, we configure the Kafka producer with the necessary properties, create a producer instance, and use it to send a “Hello, World!” message with key “myKey” to the “test-topic” topic. As you can see, both the key and value are Strings, so we are using a StringSerializer to serialize the transferred data. It’s wise to use the correct serializer based on the data types of our key and message. The callback function handles the acknowledgment of message delivery.
+
+Below is a Java code snippet that demonstrates how to create a Kafka consumer to read messages from the “test-topic” topic.
+
+01
+02
+03
+04
+05
+06
+07
+08
+09
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+import org.apache.kafka.clients.consumer.*;
+import org.apache.kafka.common.serialization.StringDeserializer;
+ 
+import java.util.Collections;
+import java.util.Properties;
+ 
+public class KafkaConsumerExample {
+    public static void main(String[] args) {
+        // Set up Kafka consumer properties
+        Properties props = new Properties();
+        props.put("bootstrap.servers", "localhost:9092");
+        props.put("group.id", "test-consumer-group"); // A consumer group ID
+        props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+ 
+        // Create a Kafka consumer
+        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
+ 
+        // Subscribe to the "test-topic" topic
+        consumer.subscribe(Collections.singletonList("test-topic"));
+ 
+        // Poll for new messages
+        while (true) {
+            ConsumerRecords<String, String> records = consumer.poll(100);
+ 
+            for (ConsumerRecord<String, String> record : records) {
+                System.out.println("Received message:");
+                System.out.println("Topic: " + record.topic());
+                System.out.println("Partition: " + record.partition());
+                System.out.println("Offset: " + record.offset());
+                System.out.println("Key: " + record.key());
+                System.out.println("Value: " + record.value());
+            }
+            consumer.commitSync();
+        }
+    }
+}
+In this code, we configure the Kafka consumer with the necessary properties, create a consumer instance, and subscribe to the “test-topic” topic. The consumer continuously polls for new messages and processes them as they arrive since Records within a partition are always delivered to consumers in offset order.
